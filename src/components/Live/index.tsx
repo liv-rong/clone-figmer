@@ -1,8 +1,11 @@
 import LiveCursors from '@/components/Cursor/LiveCursors'
-import { useOthers, useMyPresence } from '@liveblocks/react'
+import { useOthers, useMyPresence, useBroadcastEvent, useEventListener } from '@liveblocks/react'
 import { useCallback, useEffect, useState } from 'react'
 import CursorChat from '../Cursor/CursorChat'
-import { CursorMode, type CursorState } from '@/types/type'
+import { CursorMode, type CursorState, Reaction, type ReactionEvent } from '@/types/type'
+import ReactionSelector from '../reaction/ReactionButton'
+import FlyingReaction from '../reaction/FlyingReaction'
+import useInterval from '@/hooks/useInterval'
 
 const Live = () => {
   const others = useOthers()
@@ -12,11 +15,55 @@ const Live = () => {
     mode: CursorMode.Hidden
   })
 
+  const [reaction, setReaction] = useState<Reaction[]>([])
+
+  const broadcast = useBroadcastEvent()
+
+  useInterval(() => {
+    if (cursorState.mode === CursorMode.Reaction && cursorState.isPressed && cursor) {
+      setReaction((reactions) =>
+        reactions.concat([
+          {
+            point: { x: cursor.x, y: cursor.y },
+            value: cursorState.reaction,
+            timestamp: Date.now()
+          }
+        ])
+      )
+      broadcast({
+        x: cursor.x,
+        y: cursor.y,
+        value: cursorState.reaction
+      })
+    }
+  }, 100)
+
+  useInterval(() => {
+    setReaction((reactions) =>
+      reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000)
+    )
+  }, 1000)
+
+  useEventListener((eventData) => {
+    const event = eventData.event as ReactionEvent
+    setReaction((reactions) =>
+      reactions.concat([
+        {
+          point: { x: event.x, y: event.y },
+          value: event.value,
+          timestamp: Date.now()
+        }
+      ])
+    )
+  })
+
   const handlePointerMove = useCallback((event: React.PointerEvent) => {
     event.preventDefault()
-    const x = event.clientX - event.currentTarget.getBoundingClientRect().x
-    const y = event.clientY - event.currentTarget.getBoundingClientRect().y
-    updateMyPresence({ cursor: { x, y } })
+    if (cursor === null || cursorState.mode !== CursorMode.ReactionSelector) {
+      const x = event.clientX - event.currentTarget.getBoundingClientRect().x
+      const y = event.clientY - event.currentTarget.getBoundingClientRect().y
+      updateMyPresence({ cursor: { x, y } })
+    }
   }, [])
 
   const handlePointerLeave = useCallback((event: React.PointerEvent) => {
@@ -28,6 +75,34 @@ const Live = () => {
   const handlePointerDown = useCallback((event: React.PointerEvent) => {
     event.preventDefault()
     updateMyPresence({ cursor: null, message: null })
+    setCursorState((state: CursorState) =>
+      cursorState.mode === CursorMode.ReactionSelector
+        ? {
+            ...state,
+            isPressed: true
+          }
+        : state
+    )
+  }, [])
+
+  const handlePointerUp = useCallback(
+    (event: React.PointerEvent) => {
+      event.preventDefault()
+      updateMyPresence({ cursor: null, message: null })
+      setCursorState((state: CursorState) =>
+        cursorState.mode === CursorMode.Reaction
+          ? {
+              ...state,
+              isPressed: true
+            }
+          : state
+      )
+    },
+    [cursorState.mode, setCursorState]
+  )
+
+  const setReactions = useCallback((reaction: string) => {
+    setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: true })
   }, [])
 
   useEffect(() => {
@@ -37,6 +112,8 @@ const Live = () => {
       } else if (e.key === 'Escape') {
         setCursorState({ mode: CursorMode.Hidden })
         updateMyPresence({ message: '' })
+      } else if (e.key === 'e') {
+        setCursorState({ mode: CursorMode.ReactionSelector })
       }
     }
     const onKeyDown = (e: KeyboardEvent) => {
@@ -56,9 +133,19 @@ const Live = () => {
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       className="w-full h-[100vh] bg-green-700 flex justify-center items-center text-center"
     >
       dsfdsfdsfds
+      {reaction.map((r) => (
+        <FlyingReaction
+          key={r.timestamp.toString()}
+          x={r.point.x}
+          y={r.point.y}
+          timestamp={r.timestamp}
+          value={r.value}
+        />
+      ))}
       {cursor && (
         <CursorChat
           cursor={cursor}
@@ -66,6 +153,11 @@ const Live = () => {
           setCursorState={setCursorState}
           updateMyPresence={updateMyPresence}
         />
+      )}
+      {cursorState.mode === CursorMode.ReactionSelector && (
+        <>
+          <ReactionSelector setReaction={setReactions} />
+        </>
       )}
       <LiveCursors others={others} />
     </div>

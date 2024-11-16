@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import { Room } from './Room'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Room>{children} </Room>
+        <Room>
+          <TooltipProvider>{children}</TooltipProvider>
+        </Room>
       </body>
     </html>
   )
