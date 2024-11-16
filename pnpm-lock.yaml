@@ -46,6 +46,9 @@ dependencies:
     version: 11.0.3
 
 devDependencies:
+  '@types/fabric':
+    specifier: ^5.3.6
+    version: 5.3.9
   '@types/node':
     specifier: ^20
     version: 20.17.6
@@ -1178,6 +1181,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@types/fabric@5.3.9:
+    resolution: {integrity: sha512-2UEVcGUG/taX5MRqW7mjCedHFdh6VZLseyMWw3DiILH0h/fdwW0mwijgZGTqAvl+uhfdv793wU3XcQxMVbuXZA==}
+    dev: true
 
   /@types/is-hotkey@0.1.10:
     resolution: {integrity: sha512-RvC8KMw5BCac1NvRRyaHgMMEtBaZ6wh0pyPTBu7izn4Sj/AX9Y4aXU5c7rX8PnM/knsuUpC1IeoBkANtxBypsQ==}
