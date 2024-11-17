@@ -6,6 +6,12 @@ import { CursorMode, type CursorState, Reaction, type ReactionEvent } from '@/ty
 import ReactionSelector from '../reaction/ReactionButton'
 import FlyingReaction from '../reaction/FlyingReaction'
 import useInterval from '@/hooks/useInterval'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/components/ui/context-menu'
 
 interface Props {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
@@ -77,7 +83,8 @@ const Live = ({ canvasRef }: Props) => {
   }, [])
 
   const handlePointerDown = useCallback((event: React.PointerEvent) => {
-    event.preventDefault()
+    // event.preventDefault()
+    console.log('handlePointerDown')
     updateMyPresence({ cursor: null, message: null })
     setCursorState((state: CursorState) =>
       cursorState.mode === CursorMode.ReactionSelector
@@ -139,9 +146,12 @@ const Live = ({ canvasRef }: Props) => {
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      className="w-full h-full bg-green-700 flex justify-center items-center text-center"
+      className="w-full h-full  !bg-pink-200 flex justify-center items-center text-center"
     >
-      <canvas ref={canvasRef} />
+      <canvas
+        ref={canvasRef}
+        className="border-2 border-red-400 bg-white"
+      />
       {reaction.map((r) => (
         <FlyingReaction
           key={r.timestamp.toString()}

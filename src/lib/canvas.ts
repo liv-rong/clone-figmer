@@ -51,6 +51,7 @@ export const handleCanvasMouseDown = ({
   shapeRef
 }: CanvasMouseDown) => {
   // get pointer coordinates
+  // debugger
   const pointer = canvas.getPointer(options.e)
 
   /**
@@ -88,8 +89,7 @@ export const handleCanvasMouseDown = ({
     target.setCoords()
   } else {
     isDrawing.current = true
-
-    // create custom fabric object/shape and set it to shapeRef
+    // 创建自定义的fabric对象/形状，并将其设置为shapeRef
     shapeRef.current = createSpecificShape(
       selectedShapeRef.current,
       pointer as any

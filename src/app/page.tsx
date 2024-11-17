@@ -2,7 +2,7 @@
 import * as fabric from 'fabric'
 import { Live, Navbar, LeftSidebar, RightSidebar } from '@/components'
 import { defaultNavElement } from '@/constants'
-import { handleCanvasMouseDown, handleResize, initializeFabric } from '@/lib/canvas'
+import { handleCanvasMouseDown, handleResize, initializeFabric, renderCanvas } from '@/lib/canvas'
 import { handleImageUpload } from '@/lib/shapes'
 import type { ActiveElement } from '@/types/type'
 import { useMutation } from '@liveblocks/react'
@@ -13,7 +13,7 @@ export default function Home() {
   const fabricRef = useRef<fabric.Canvas | null>(null)
   const isDrawing = useRef<boolean>(false)
   const shapeRef = useRef<fabric.Object | null>(null)
-  const selectedShapeRef = useRef<string | null>(null)
+  const selectedShapeRef = useRef<string | null>('rectangle')
   const imageInputRef = useRef<HTMLInputElement>(null)
 
   const [activeElement, setActiveElement] = useState<ActiveElement>({
@@ -26,19 +26,45 @@ export default function Home() {
       canvasRef,
       fabricRef
     })
+    console.log('111111')
+
+    // export type CanvasMouseDown = {
+    //   options: fabric.IEvent
+    //   canvas: fabric.Canvas
+    //   selectedShapeRef: any
+    //   isDrawing: React.MutableRefObject<boolean>
+    //   shapeRef: React.MutableRefObject<fabric.Object | null>
+    // }
+    console.log(canvas, 'canvas1111111')
+    canvas.add(new fabric.Rect({ width: 100, height: 100, fill: 'red' }))
     canvas.on('mouse:down', (options) => {
+      console.log('mouse2222222222')
+      console.log(options, 'mouse:down')
       handleCanvasMouseDown({
         options: options as unknown as IEvent<Event>,
         canvas: canvas as any,
-        selectedShapeRef: selectedShapeRef.current,
+        selectedShapeRef: selectedShapeRef,
         isDrawing: isDrawing,
-        shapeRef: shapeRef.current as any
+        shapeRef: shapeRef as any
       })
+    })
+    canvas.on('mouse:move', () => {
+      console.log('mouse:move')
+    })
+    canvas.on('mouse:down:before', () => {
+      console.log('mouse:down:before')
+    })
+    canvas.on('mouse:up:before', () => {
+      console.log('mouse:up:before')
+    })
+
+    canvas.on('mouse:up', () => {
+      console.log('mouse:up')
     })
     window.addEventListener('resize', () => {
       handleResize({ canvas: fabricRef.current })
     })
-  }, [])
+  }, [canvasRef])
 
   const deleteAllShapes = useMutation(() => {
     // // get the canvasObjects store
@@ -51,7 +77,7 @@ export default function Home() {
     // }
     // // return true if the store is empty
     // return canvasObjects.size === 0
-  }, [])
+  }, [canvasRef])
 
   const handleActiveElement = (element: ActiveElement) => {
     console.log('element', element)
@@ -78,9 +104,18 @@ export default function Home() {
 
       default:
         selectedShapeRef.current = element?.value as string
+
         break
     }
   }
+
+  // useEffect(() => {
+  //   renderCanvas({
+  //     fabricRef,
+  //     canvasObjects,
+  //     activeObjectRef
+  //   })
+  // }, [canvasObjects])
 
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center text-center">
@@ -102,6 +137,12 @@ export default function Home() {
       />
       <div className="h-[calc(100vh-64px)] w-full flex  justify-center items-center ">
         <LeftSidebar />
+        {/* <div className="w-full h-full">
+          <canvas
+            ref={canvasRef}
+            className="border-2 border-red-400 bg-white"
+          />
+        </div> */}
         <Live canvasRef={canvasRef} />
         <RightSidebar />
       </div>

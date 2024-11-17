@@ -12,10 +12,6 @@ const ActiveUsers = () => {
 
   const currentUser = useSelf()
 
-  console.log('others', others)
-
-  console.log('currentUser', currentUser)
-
   const memoizedUsers = useMemo(() => {
     const hasMoreUsers = others.length > 2
 
