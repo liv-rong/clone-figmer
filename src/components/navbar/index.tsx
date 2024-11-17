@@ -1,10 +1,11 @@
 import { ActiveUsers } from '..'
 import Image from 'next/image'
-import { memo } from 'react'
 import { navElements } from '@/constants'
 import { ActiveElement, NavbarProps } from '@/types/type'
+import { Button } from '@/components/ui/button'
+import ShapesMenu from './ShapesMenu'
 
-const Navbar: React.FC = ({
+const Navbar = ({
   activeElement,
   imageInputRef,
   handleImageUpload,
@@ -22,7 +23,8 @@ const Navbar: React.FC = ({
         width={58}
         height={20}
       />
-      <ul className="flex flex-row">
+
+      <ul className="flex flex-row text-white">
         {navElements.map((item: ActiveElement | any, index) => (
           <li
             key={index}

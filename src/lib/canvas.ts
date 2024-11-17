@@ -1,4 +1,4 @@
-import fabric from 'fabric'
+import * as fabric from 'fabric'
 import { v4 as uuid4 } from 'uuid'
 
 import {
@@ -24,6 +24,11 @@ export const initializeFabric = ({
 }) => {
   // get canvas element
   const canvasElement = document.getElementById('canvas')
+
+  // 检查并销毁已存在的画布
+  if (fabricRef.current) {
+    fabricRef.current.dispose()
+  }
 
   // create fabric canvas
   const canvas = new fabric.Canvas(canvasRef.current!, {

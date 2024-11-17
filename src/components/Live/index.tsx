@@ -8,7 +8,7 @@ import FlyingReaction from '../reaction/FlyingReaction'
 import useInterval from '@/hooks/useInterval'
 
 interface Props {
-  canvasRef: React.MutableRefObject<HTMLCanvasElement>
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
 }
 
 const Live = ({ canvasRef }: Props) => {
