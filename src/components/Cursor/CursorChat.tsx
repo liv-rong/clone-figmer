@@ -1,5 +1,6 @@
 import { CursorMode, type CursorChatProps } from '@/types/type'
 import CursorSvg from '../../../public/assets/CursorSVG'
+import { useEffect, useState } from 'react'
 
 const CursorsChat = ({
   cursor,
