@@ -11,6 +11,7 @@ const Navbar = ({
   handleImageUpload,
   handleActiveElement
 }: NavbarProps) => {
+  console.log(activeElement, 'activeElement')
   const isActive = (value: string | Array<ActiveElement>) =>
     (activeElement && activeElement.value === value) ||
     (Array.isArray(value) && value.some((val) => val?.value === activeElement?.value))

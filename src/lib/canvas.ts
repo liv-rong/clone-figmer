@@ -23,6 +23,7 @@ export const initializeFabric = ({
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
 }) => {
   // get canvas element
+  // debugger
   const canvasElement = document.getElementById('canvas')
 
   // 检查并销毁已存在的画布
@@ -35,6 +36,8 @@ export const initializeFabric = ({
     width: canvasElement?.clientWidth,
     height: canvasElement?.clientHeight
   })
+
+  canvas.add(new fabric.Rect({ width: 100, height: 100, fill: 'red', top: 100, left: 100 }))
 
   // set canvas reference to fabricRef so we can use it later anywhere outside canvas listener
   fabricRef.current = canvas
@@ -50,6 +53,7 @@ export const handleCanvasMouseDown = ({
   isDrawing,
   shapeRef
 }: CanvasMouseDown) => {
+  // debugger
   // get pointer coordinates
   // debugger
   const pointer = canvas.getPointer(options.e)
